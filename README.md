@@ -42,9 +42,9 @@ WorldoMeters: https://www.worldometers.info/coronavirus/
 Additional Information about the Visual Dashboard:
 https://systems.jhu.edu/research/public-health/ncov/
 
-Contact Us:
+Contact Me:
 
-Email: jhusystems@gmail.com
+Email: sidban@uwalumni.com
 
 Terms of Use:
 
