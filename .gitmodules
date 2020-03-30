@@ -1,0 +1,3 @@
+[submodule "JHU_repo"]
+	path = JHU_repo
+	url = https://github.com/sidbannet/COVID-19.git
