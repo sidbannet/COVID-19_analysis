@@ -141,15 +141,67 @@ class DataClass:
         self.dead_us = df_template_us
         self.recov_us = df_template_us
 
+        self._initialize_values_()
+
+    def _initialize_values_(self) -> None:
+        """Initialize the dataframe with zero initial cases."""
+
+        self.conf.fillna(0)
+        self.conf_us.fillna(0)
+        self.recov.fillna(0)
+        self.recov_us.fillna(0)
+        self.dead.fillna(0)
+        self.dead_us.fillna(0)
+
+        for country in self.__reg__['Country']:
+            self.conf[country[0]] = np.zeros_like(
+                self.conf.__getitem__(country[0]),
+                int,
+            )
+            self.dead[country[0]] = np.zeros_like(
+                self.dead.__getitem__(country[0]),
+                int,
+            )
+            self.recov[country[0]] = np.zeros_like(
+                self.recov.__getitem__(country[0]),
+                int,
+            )
+        for state in self.__reg__['State']:
+            self.conf_us[state[1]] = np.zeros_like(
+                self.conf_us.__getitem__(state[1]),
+                int,
+            )
+            self.dead_us[state[1]] = np.zeros_like(
+                self.dead_us.__getitem__(state[1]),
+                int,
+            )
+            self.recov_us[state[1]] = np.zeros_like(
+                self.recov_us.__getitem__(state[1]),
+                int,
+            )
+
     def parse(self) -> None:
         """Parse data from the database."""
 
         # Get data from each csv files of daily updates
-        for dt in self.__dates__:
+        for idx, dt in enumerate(self.__dates__):
             filename = datetime.datetime.strftime(dt, '%m-%d-%Y')
             filepath = self.__jhudataloc__ + filename + '.csv'
             df = pd.read_csv(
                 filepath_or_buffer=filepath,
             )
+            for inum, icon in enumerate(df._values[:, 1]):
+                con_buc = [
+                    icon in self.__reg__['Country'][i] for i in range(
+                        self.__reg__['Country'].__len__()
+                    )
+                ]
+                if sum(con_buc) == 0:
+                    con_buc[-1] = True
+                # The country index in the data frame
+                res = [i for i, val in enumerate(con_buc) if val] + int(1)
+                try:
+                    self.conf._values[idx, res] += int(df._values[inum, -3])
+                except ValueError as ve:
+                    pass  # Do nothing
 
-        pass
