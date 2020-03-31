@@ -199,40 +199,19 @@ class DataClass:
                     ][0]
                 try:
                     number_of_cases = int(df.Confirmed[inum]) \
-                                      + self.conf.get_value(
-                        index=idx,
-                        col=country_name,
-                    )
-                    self.conf.set_value(
-                        index=idx,
-                        col=country_name,
-                        value=number_of_cases,
-                    )
+                                      + self.conf.at[idx, country_name]
+                    self.conf.at[idx, country_name] = number_of_cases
                 except ValueError as ve:
                     pass  # Do nothing
                 try:
                     number_of_cases = int(df.Deaths[inum]) \
-                                      + self.dead.get_value(
-                        index=idx,
-                        col=country_name,
-                    )
-                    self.dead.set_value(
-                        index=idx,
-                        col=country_name,
-                        value=number_of_cases,
-                    )
+                                      + self.dead.at[idx, country_name]
+                    self.dead.at[idx, country_name] = number_of_cases
                 except ValueError as ve:
                     pass  # Do nothing
                 try:
                     number_of_cases = int(df.Recovered[inum]) \
-                                      + self.recov.get_value(
-                        index=idx,
-                        col=country_name,
-                    )
-                    self.recov.set_value(
-                        index=idx,
-                        col=country_name,
-                        value=number_of_cases,
-                    )
+                                      + self.recov.at[idx, country_name]
+                    self.recov.at[idx, country_name] = number_of_cases
                 except ValueError as ve:
                     pass  # Do nothing
