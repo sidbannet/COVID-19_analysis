@@ -133,6 +133,7 @@ class DataClass:
         df_template_us.Date = self.__dates__
         df_template.set_index('Date')
         df_template_us.set_index('Date')
+
         self.conf = df_template
         self.dead = df_template
         self.recov = df_template
@@ -142,4 +143,13 @@ class DataClass:
 
     def parse(self) -> None:
         """Parse data from the database."""
+
+        # Get data from each csv files of daily updates
+        for dt in self.__dates__:
+            filename = datetime.datetime.strftime(dt, '%m-%d-%Y')
+            filepath = self.__jhudataloc__ + filename + '.csv'
+            df = pd.read_csv(
+                filepath_or_buffer=filepath,
+            )
+
         pass
