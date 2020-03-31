@@ -199,9 +199,46 @@ class DataClass:
                 if sum(con_buc) == 0:
                     con_buc[-1] = True
                 # The country index in the data frame
-                res = [i for i, val in enumerate(con_buc) if val] + int(1)
+                contry_name = \
+                    self.__reg__['Country'][
+                        [i for i, val in enumerate(con_buc) if val][0]
+                    ][0]
                 try:
-                    self.conf._values[idx, res] += int(df._values[inum, -3])
+                    number_of_cases = int(df._values[inum, -3]) \
+                                      + self.conf.get_value(
+                        index=idx,
+                        col=contry_name,
+                    )
+                    self.conf.set_value(
+                        index=idx,
+                        col=contry_name,
+                        value=number_of_cases,
+                    )
                 except ValueError as ve:
                     pass  # Do nothing
-
+                try:
+                    number_of_cases = int(df._values[inum, -2]) \
+                                      + self.dead.get_value(
+                        index=idx,
+                        col=contry_name,
+                    )
+                    self.dead.set_value(
+                        index=idx,
+                        col=contry_name,
+                        value=number_of_cases,
+                    )
+                except ValueError as ve:
+                    pass  # Do nothing
+                try:
+                    number_of_cases = int(df._values[inum, -1]) \
+                                      + self.recov.get_value(
+                        index=idx,
+                        col=contry_name,
+                    )
+                    self.recov.set_value(
+                        index=idx,
+                        col=contry_name,
+                        value=number_of_cases,
+                    )
+                except ValueError as ve:
+                    pass  # Do nothing
