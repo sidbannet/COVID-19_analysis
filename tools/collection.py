@@ -146,13 +146,6 @@ class DataClass:
     def _initialize_values_(self) -> None:
         """Initialize the dataframe with zero initial cases."""
 
-        self.conf.fillna(0)
-        self.conf_us.fillna(0)
-        self.recov.fillna(0)
-        self.recov_us.fillna(0)
-        self.dead.fillna(0)
-        self.dead_us.fillna(0)
-
         for country in self.__reg__['Country']:
             self.conf[country[0]] = np.zeros_like(
                 self.conf.__getitem__(country[0]),
@@ -191,7 +184,8 @@ class DataClass:
                 filepath_or_buffer=filepath,
             )
             df.columns = df.columns.str.replace('/', '_')
-            for inum, icon in enumerate(df._values[:, 1]):
+            # Find which country bucket the data belong to
+            for inum, icon in enumerate(df.Country_Region):
                 con_buc = [
                     icon in self.__reg__['Country'][i] for i in range(
                         self.__reg__['Country'].__len__()
@@ -199,46 +193,45 @@ class DataClass:
                 ]
                 if sum(con_buc) == 0:
                     con_buc[-1] = True
-                # The country index in the data frame
-                contry_name = \
+                country_name = \
                     self.__reg__['Country'][
                         [i for i, val in enumerate(con_buc) if val][0]
                     ][0]
                 try:
-                    number_of_cases = int(df._values[inum, -3]) \
+                    number_of_cases = int(df.Confirmed[inum]) \
                                       + self.conf.get_value(
                         index=idx,
-                        col=contry_name,
+                        col=country_name,
                     )
                     self.conf.set_value(
                         index=idx,
-                        col=contry_name,
+                        col=country_name,
                         value=number_of_cases,
                     )
                 except ValueError as ve:
                     pass  # Do nothing
                 try:
-                    number_of_cases = int(df._values[inum, -2]) \
+                    number_of_cases = int(df.Deaths[inum]) \
                                       + self.dead.get_value(
                         index=idx,
-                        col=contry_name,
+                        col=country_name,
                     )
                     self.dead.set_value(
                         index=idx,
-                        col=contry_name,
+                        col=country_name,
                         value=number_of_cases,
                     )
                 except ValueError as ve:
                     pass  # Do nothing
                 try:
-                    number_of_cases = int(df._values[inum, -1]) \
+                    number_of_cases = int(df.Recovered[inum]) \
                                       + self.recov.get_value(
                         index=idx,
-                        col=contry_name,
+                        col=country_name,
                     )
                     self.recov.set_value(
                         index=idx,
-                        col=contry_name,
+                        col=country_name,
                         value=number_of_cases,
                     )
                 except ValueError as ve:
