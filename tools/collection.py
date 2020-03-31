@@ -134,12 +134,12 @@ class DataClass:
         df_template.set_index('Date')
         df_template_us.set_index('Date')
 
-        self.conf = df_template
-        self.dead = df_template
-        self.recov = df_template
-        self.conf_us = df_template_us
-        self.dead_us = df_template_us
-        self.recov_us = df_template_us
+        self.conf = df_template.copy()
+        self.dead = df_template.copy()
+        self.recov = df_template.copy()
+        self.conf_us = df_template_us.copy()
+        self.dead_us = df_template_us.copy()
+        self.recov_us = df_template_us.copy()
 
         self._initialize_values_()
 
