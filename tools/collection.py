@@ -201,17 +201,69 @@ class DataClass:
                     number_of_cases = int(df.Confirmed[inum]) \
                                       + self.conf.at[idx, country_name]
                     self.conf.at[idx, country_name] = number_of_cases
-                except ValueError as ve:
+                except ValueError:
                     pass  # Do nothing
                 try:
                     number_of_cases = int(df.Deaths[inum]) \
                                       + self.dead.at[idx, country_name]
                     self.dead.at[idx, country_name] = number_of_cases
-                except ValueError as ve:
+                except ValueError:
                     pass  # Do nothing
                 try:
                     number_of_cases = int(df.Recovered[inum]) \
                                       + self.recov.at[idx, country_name]
                     self.recov.at[idx, country_name] = number_of_cases
-                except ValueError as ve:
+                except ValueError:
                     pass  # Do nothing
+            # Find out which US state it is
+            for inum, icon in enumerate(df.Country_Region):
+                if icon not in self.__reg__['Country'][0]:
+                    try:
+                        self.conf_us.at[idx, 'ROW'] +=\
+                            int(df.Confirmed[inum])
+                    except ValueError:
+                        pass  # Do nothing
+                    try:
+                        self.dead_us.at[idx, 'ROW'] +=\
+                            int(df.Deaths[inum])
+                    except ValueError:
+                        pass  # Do nothing
+                    try:
+                        self.recov_us.at[idx, 'ROW'] +=\
+                            int(df.Recovered[inum])
+                    except ValueError:
+                        pass  # Do nothing
+                else:   # This is filtered US case
+                    try:
+                        istate = df.Province_State[inum].split(sep=', ')[-1]
+                    except ValueError:
+                        istate = 'US'
+                    state_buc = [
+                        istate in self.__reg__['State'][i] for i in range(
+                            self.__reg__['State'].__len__()
+                        )
+                    ]
+                    if sum(state_buc) == 0:
+                        state_buc[-2] = True
+                    state_name = \
+                        self.__reg__['State'][
+                            [i for i, val in enumerate(state_buc) if val][0]
+                        ][1]
+                    try:
+                        number_of_cases = int(df.Confirmed[inum]) \
+                                          + self.conf_us.at[idx, state_name]
+                        self.conf_us.at[idx, state_name] = number_of_cases
+                    except ValueError:
+                        pass  # Do nothing
+                    try:
+                        number_of_cases = int(df.Deaths[inum]) \
+                                          + self.dead_us.at[idx, state_name]
+                        self.dead_us.at[idx, state_name] = number_of_cases
+                    except ValueError:
+                        pass  # Do nothing
+                    try:
+                        number_of_cases = int(df.Recovered[inum]) \
+                                          + self.recov_us.at[idx, state_name]
+                        self.recov_us.at[idx, state_name] = number_of_cases
+                    except ValueError:
+                        pass  # Do nothing
