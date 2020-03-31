@@ -11,12 +11,15 @@ import os
 
 
 class DataClass:
-    """Import and collect data of COVID cases per country."""
+    """Import, collect and present data of COVID cases."""
 
     def __init__(self):
         """Initialize the class."""
 
-        self.df = pd.DataFrame(data=None)
+        df_template = pd.DataFrame(data=None)
+        df_template['Date'] = []
+        df_template_us = df_template.copy()
+
         region_index = {
             'Country': [
                 ['US', 'United States', 'United States of America'],
@@ -26,6 +29,7 @@ class DataClass:
                 ['Singapore'],
                 ['Italy'],
                 ['UK', 'United Kingdom'],
+                ['Germany'],
                 ['Spain'],
                 ['Other'],
             ],
@@ -80,8 +84,8 @@ class DataClass:
                 ['West Virginia', 'WV'],
                 ['Wisconsin', 'WI'],
                 ['Wyoming', 'WY'],
-                ['Other - US', ],
-                ['Other', ],
+                ['Other', 'US'],
+                ['Rest of the World', 'ROW'],
             ],
         }
 
@@ -117,3 +121,26 @@ class DataClass:
                               + os.sep + 'csse_covid_19_data' \
                               + os.sep + 'csse_covid_19_daily_reports' \
                               + os.sep
+
+        # Initialize the data frame
+        for inum, icon in enumerate(region_index['Country']):
+            df_template[icon[0]] = []
+
+        for inum, istate in enumerate(region_index['State']):
+            df_template_us[istate[0]] = []
+
+        df_template.Date = self.__dates__
+        df_template_us.Date = self.__dates__
+        df_template.set_index('Date')
+        df_template_us.set_index('Date')
+        self.conf = df_template
+        self.dead = df_template
+        self.recov = df_template
+        self.conf_us = df_template_us
+        self.dead_us = df_template_us
+        self.recov_us = df_template_us
+
+
+    def parse(self) -> None:
+        """Parse data from the database."""
+        pass
