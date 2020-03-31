@@ -42,7 +42,7 @@ class DataClass:
                 ['Colorado', 'CO'],
                 ['Connecticut', 'CT'],
                 ['Delaware', 'DE'],
-                ['Florida - FL'],
+                ['Florida', 'FL'],
                 ['Georgia', 'GA'],
                 ['Hawaii', 'HI'],
                 ['Idaho', 'ID'],
@@ -127,7 +127,7 @@ class DataClass:
             df_template[icon[0]] = []
 
         for inum, istate in enumerate(region_index['State']):
-            df_template_us[istate[0]] = []
+            df_template_us[istate[1]] = []
 
         df_template.Date = self.__dates__
         df_template_us.Date = self.__dates__
