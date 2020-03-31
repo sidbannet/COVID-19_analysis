@@ -140,7 +140,6 @@ class DataClass:
         self.dead_us = df_template_us
         self.recov_us = df_template_us
 
-
     def parse(self) -> None:
         """Parse data from the database."""
         pass
