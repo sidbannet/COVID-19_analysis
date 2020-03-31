@@ -93,21 +93,21 @@ class DataClass:
 
         for y in [2020]:
             for m in [1]:
-                for d in np.linspace(start=22, stop=31):
+                for d in np.arange(start=22, stop=32, step=1):
                     dates.append(
                         datetime.datetime(
                             year=int(y), month=int(m), day=int(d),
                         )
                     )
             for m in [2]:
-                for d in np.linspace(start=1, stop=29):
+                for d in np.arange(start=1, stop=30, step=1):
                     dates.append(
                         datetime.datetime(
                             year=int(y), month=int(m), day=int(d),
                         )
                     )
             for m in [3]:
-                for d in np.linspace(start=1, stop=29):
+                for d in np.arange(start=1, stop=30, step=1):
                     dates.append(
                         datetime.datetime(
                             year=int(y), month=int(m), day=int(d),
@@ -190,6 +190,7 @@ class DataClass:
             df = pd.read_csv(
                 filepath_or_buffer=filepath,
             )
+            df.columns = df.columns.str.replace('/', '_')
             for inum, icon in enumerate(df._values[:, 1]):
                 con_buc = [
                     icon in self.__reg__['Country'][i] for i in range(
