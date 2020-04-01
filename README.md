@@ -1,8 +1,10 @@
-# COVID-19_analysis
+# COVID-19 analysis using database maintained by JHU
 
 This is repository of the code to analysis data of 2019 Novel Corovirus cases.
 
 -----------
+
+This code repository uses the data repository published by JHU
  
 This is the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
