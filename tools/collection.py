@@ -8,6 +8,7 @@ import pandas as pd
 import datetime
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 
 
 class DataClass:
@@ -219,21 +220,21 @@ class DataClass:
             for inum, icon in enumerate(df.Country_Region):
                 if icon not in self.__reg__['Country'][0]:
                     try:
-                        self.conf_us.at[idx, 'ROW'] +=\
+                        self.conf_us.at[idx, 'ROW'] += \
                             int(df.Confirmed[inum])
                     except ValueError:
                         pass  # Do nothing
                     try:
-                        self.dead_us.at[idx, 'ROW'] +=\
+                        self.dead_us.at[idx, 'ROW'] += \
                             int(df.Deaths[inum])
                     except ValueError:
                         pass  # Do nothing
                     try:
-                        self.recov_us.at[idx, 'ROW'] +=\
+                        self.recov_us.at[idx, 'ROW'] += \
                             int(df.Recovered[inum])
                     except ValueError:
                         pass  # Do nothing
-                else:   # This is filtered US case
+                else:  # This is filtered US case
                     try:
                         istate = df.Province_State[inum].split(sep=', ')[-1]
                     except ValueError:
@@ -267,3 +268,45 @@ class DataClass:
                         self.recov_us.at[idx, state_name] = number_of_cases
                     except ValueError:
                         pass  # Do nothing
+
+    def plots(self) -> tuple:
+        """Plot the COVID trends."""
+
+    def __plot__(
+            self,
+            idx: int = None,
+            window: int = 3,
+            *args,
+    ) -> tuple:
+        """Plot a single figure with figures."""
+        try:
+            fig, ax = args
+        except ValueError:
+            fig = plt.figure('COVID trends')
+            ax = fig.subplots(nrows=2, ncols=1)
+        if idx is None:
+            idx = self.__dates__.__len__()
+        # Give the plots
+        end_at = int(window - 1)
+        for icon in self.conf.columns[1:]:
+            data = self.conf[icon].values
+            x = data[:idx]
+            x_diff = np.diff(x, prepend=0)
+            y = self.moving_average(values=x_diff, window=window)
+            ax[0].plot(x[end_at:], y, label=icon)
+        for istate in self.conf_us.columns[1:]:
+            data = self.conf_us[istate].values
+            x = data[:idx]
+            x_diff = np.diff(x, prepend=0)
+            y = self.moving_average(values=x_diff, window=window)
+            ax[1].plot(x[end_at:], y, label=istate)
+        return fig, ax
+
+    @staticmethod
+    def moving_average(
+            values: np.ndarray = None,
+            window: int = None,
+    ) -> np.ndarray:
+        """Moving average."""
+        weights = np.repeat(1.0, window) / window
+        return np.convolve(values, weights, 'valid')
