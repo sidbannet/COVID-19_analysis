@@ -271,11 +271,21 @@ class DataClass:
 
     def plots(self) -> tuple:
         """Plot the COVID trends."""
+        fig = plt.figure('COVID trends')
+        ax = fig.subplots(nrows=2, ncols=1)
+        self.__window__ = int(3)
+        fig, ax = self.__plot__(fig, ax)
+        [axes.grid(True) for axes in ax.flat]
+        [axes.set_xscale('log') for axes in ax.flat]
+        [axes.set_yscale('log') for axes in ax.flat]
+        [axes.set_xlabel('Total number of cases') for axes in ax.flat]
+        [axes.set_ylabel('Daily average growth') for axes in ax.flat]
+        ax[0].set_title('Confirmed cases')
+        fig.suptitle('COVID trends')
+        return fig, ax
 
     def __plot__(
             self,
-            idx: int = None,
-            window: int = 3,
             *args,
     ) -> tuple:
         """Plot a single figure with figures."""
@@ -284,9 +294,12 @@ class DataClass:
         except ValueError:
             fig = plt.figure('COVID trends')
             ax = fig.subplots(nrows=2, ncols=1)
-        if idx is None:
-            idx = self.__dates__.__len__()
+        idx = self.__dates__.__len__()
         # Give the plots
+        try:
+            window = self.__window__
+        except ValueError:
+            window = 3
         end_at = int(window - 1)
         for icon in self.conf.columns[1:]:
             data = self.conf[icon].values
