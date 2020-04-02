@@ -368,36 +368,72 @@ class DataClass:
             idx_since_100_count = np.where(
                 np.asarray(self.conf[icon].values >= int(n_outbreak))
             )[0][0]
-            ax[0, 0].plot(
-                self.conf[icon].values[idx_since_100_count:],
-                label=icon,
-            )
-            ax[0, 1].plot(
-                self.dead[icon].values[idx_since_100_count:],
-                label=icon,
-            )
-            ax[0, 2].plot(
-                self.recov[icon].values[idx_since_100_count:],
-                label=icon,
-            )
+            if icon is not 'Other':
+                ax[0, 0].plot(
+                    self.conf[icon].values[idx_since_100_count:],
+                    label=icon,
+                )
+                ax[0, 1].plot(
+                    self.dead[icon].values[idx_since_100_count:],
+                    label=icon,
+                )
+                ax[0, 2].plot(
+                    self.recov[icon].values[idx_since_100_count:],
+                    label=icon,
+                )
+            else:
+                ax[0, 0].plot(
+                    self.conf[icon].values[idx_since_100_count:],
+                    label=icon,
+                    linestyle='dashed', color='k', linewidth=1,
+                )
+                ax[0, 1].plot(
+                    self.dead[icon].values[idx_since_100_count:],
+                    label=icon,
+                    linestyle='dashed', color='k', linewidth=1,
+                )
+                ax[0, 2].plot(
+                    self.recov[icon].values[idx_since_100_count:],
+                    label=icon,
+                    linestyle='dashed', color='k', linewidth=1,
+                )
+
         for istate in self.conf_us.columns[1:]:
             if self.conf_us[istate].values[-1] < int(nstate_filter):  # Filter
                 continue
             idx_since_100_count = np.where(
                 np.asarray(self.conf_us[istate].values >= int(n_outbreak))
             )[0][0]
-            ax[1, 0].plot(
-                self.conf_us[istate].values[idx_since_100_count:],
-                label=istate,
-            )
-            ax[1, 1].plot(
-                self.dead_us[istate].values[idx_since_100_count:],
-                label=istate,
-            )
-            ax[1, 2].plot(
-                self.recov_us[istate].values[idx_since_100_count:],
-                label=istate,
-            )
+            if istate is not 'ROW':
+                ax[1, 0].plot(
+                    self.conf_us[istate].values[idx_since_100_count:],
+                    label=istate,
+                )
+                ax[1, 1].plot(
+                    self.dead_us[istate].values[idx_since_100_count:],
+                    label=istate,
+                )
+                ax[1, 2].plot(
+                    self.recov_us[istate].values[idx_since_100_count:],
+                    label=istate,
+                )
+            else:
+                ax[1, 0].plot(
+                    self.conf_us[istate].values[idx_since_100_count:],
+                    label=istate,
+                    linestyle='dashed', linewidth=1, color='k',
+                )
+                ax[1, 1].plot(
+                    self.dead_us[istate].values[idx_since_100_count:],
+                    label=istate,
+                    linestyle='dashed', linewidth=1, color='k',
+                )
+                ax[1, 2].plot(
+                    self.recov_us[istate].values[idx_since_100_count:],
+                    label=istate,
+                    linestyle='dashed', linewidth=1, color='k',
+                )
+
         return fig, ax
 
     @staticmethod
