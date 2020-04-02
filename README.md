@@ -8,6 +8,8 @@ This code repository uses the data repository published by JHU
  
 This is the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
+![COVID-19 trends from this analysis](https://github.com/sidbannet/COVID-19_analysis/blob/master/COVID_trend.png)
+
 
 Visual Dashboard (desktop):
 https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
