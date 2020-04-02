@@ -305,7 +305,9 @@ class DataClass:
         [axes.set_ylim([1000, 500000]) for axes in ax.flat]
         [axes.legend(title='Country') for axes in ax[0, :].flat]
         [axes.legend(title='US State') for axes in ax[1, :].flat]
-        [axes.set_xlabel('Days since outbreak') for axes in ax[1, :].flat]
+        [axes.set_xlabel(
+            'Days since ' + str(self.__n_outbreak__) + ' cases'
+        ) for axes in ax[1, :].flat]
         ax[0, 0].set_title('Confirmed cases')
         ax[0, 1].set_title('Deaths')
         ax[0, 2].set_title('Recovered')
