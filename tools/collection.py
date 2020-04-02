@@ -9,6 +9,7 @@ import datetime
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import tools.matplottools as mplttools
 
 
 class DataClass:
@@ -302,8 +303,8 @@ class DataClass:
         [axes.set_xscale('linear') for axes in ax.flat]
         [axes.set_yscale('log') for axes in ax.flat]
         [axes.set_ylim([1000, 500000]) for axes in ax.flat]
-        ax[0, 1].legend()
-        ax[1, 1].legend()
+        [axes.legend(title='Country') for axes in ax[0, :].flat]
+        [axes.legend(title='US State') for axes in ax[1, :].flat]
         [axes.set_xlabel('Days since outbreak') for axes in ax[1, :].flat]
         ax[0, 0].set_title('Confirmed cases')
         ax[0, 1].set_title('Deaths')
@@ -362,7 +363,7 @@ class DataClass:
             n_outbreak = self.__n_outbreak__
         except AttributeError:
             n_outbreak = 100
-        for icon in self.conf.columns[1:]:
+        for i, icon in enumerate(self.conf.columns[1:]):
             if self.conf[icon].values[-1] < int(ncon_filter):  # Filter data
                 continue
             idx_since_100_count = np.where(
@@ -372,14 +373,20 @@ class DataClass:
                 ax[0, 0].plot(
                     self.conf[icon].values[idx_since_100_count:],
                     label=icon,
+                    marker=mplttools.markers(i),
+                    linewidth=3,
                 )
                 ax[0, 1].plot(
                     self.dead[icon].values[idx_since_100_count:],
                     label=icon,
+                    marker=mplttools.markers(i),
+                    linewidth=3,
                 )
                 ax[0, 2].plot(
                     self.recov[icon].values[idx_since_100_count:],
                     label=icon,
+                    marker=mplttools.markers(i),
+                    linewidth=3,
                 )
             else:
                 ax[0, 0].plot(
@@ -398,7 +405,7 @@ class DataClass:
                     linestyle='dashed', color='k', linewidth=1,
                 )
 
-        for istate in self.conf_us.columns[1:]:
+        for i, istate in enumerate(self.conf_us.columns[1:]):
             if self.conf_us[istate].values[-1] < int(nstate_filter):  # Filter
                 continue
             idx_since_100_count = np.where(
@@ -408,14 +415,20 @@ class DataClass:
                 ax[1, 0].plot(
                     self.conf_us[istate].values[idx_since_100_count:],
                     label=istate,
+                    marker=mplttools.markers(i),
+                    linewidth=2,
                 )
                 ax[1, 1].plot(
                     self.dead_us[istate].values[idx_since_100_count:],
                     label=istate,
+                    marker=mplttools.markers(i),
+                    linewidth=2,
                 )
                 ax[1, 2].plot(
                     self.recov_us[istate].values[idx_since_100_count:],
                     label=istate,
+                    marker=mplttools.markers(i),
+                    linewidth=2,
                 )
             else:
                 ax[1, 0].plot(
