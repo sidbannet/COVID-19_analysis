@@ -284,6 +284,34 @@ class DataClass:
         fig.suptitle('COVID trends')
         return fig, ax
 
+    def plots_timeseries(
+        self,
+        n_outbreak: int = 100,
+        n_filter_country: int = 10000,
+        n_filter_state: int = 5000,
+    ) -> tuple:
+        """Plot the COVID trends in time series."""
+        fig = plt.figure('COVID time series')
+        ax = fig.subplots(nrows=2, ncols=3, sharex=True)
+        self.__filter_nconf_con__ = n_filter_country
+        self.__filter_nconf_state__ = n_filter_state
+        self.__n_outbreak__ = n_outbreak
+        fig, ax = self.__time_series_plot__(fig, ax)
+        [axes.grid(True) for axes in ax.flat]
+        [axes.set_xscale('log') for axes in ax.flat]
+        [axes.set_xscale('linear') for axes in ax.flat]
+        [axes.set_yscale('log') for axes in ax.flat]
+        [axes.set_ylim([1000, 500000]) for axes in ax.flat]
+        ax[0, 1].legend()
+        ax[1, 1].legend()
+        [axes.set_xlabel('Days since outbreak') for axes in ax[1, :].flat]
+        ax[0, 0].set_title('Confirmed cases')
+        ax[0, 1].set_title('Deaths')
+        ax[0, 2].set_title('Recovered')
+        fig.suptitle('COVID-19 time series trend')
+
+        return fig, ax
+
     def __plot__(
             self,
             *args,
@@ -298,7 +326,7 @@ class DataClass:
         # Give the plots
         try:
             window = self.__window__
-        except ValueError:
+        except AttributeError:
             window = 3
         end_at = int(window - 1)
         for icon in self.conf.columns[1:]:
@@ -313,6 +341,63 @@ class DataClass:
             x_diff = np.diff(x, prepend=0)
             y = self.moving_average(values=x_diff, window=window)
             ax[1].plot(x[end_at:], y, label=istate)
+        return fig, ax
+
+    def __time_series_plot__(self, *args) -> tuple:
+        """Method to plots data in time series."""
+        try:
+            fig, ax = args
+        except ValueError:
+            fig = plt.figure('COVID-19 time series trends.')
+            ax = fig.subplots(nrows=2, ncols=3, sharex=True)
+        try:
+            ncon_filter = self.__filter_nconf_con__
+        except AttributeError:
+            ncon_filter = 10000
+        try:
+            nstate_filter = self.__filter_nconf_state__
+        except AttributeError:
+            nstate_filter = 5000
+        try:
+            n_outbreak = self.__n_outbreak__
+        except AttributeError:
+            n_outbreak = 100
+        for icon in self.conf.columns[1:]:
+            if self.conf[icon].values[-1] < int(ncon_filter):  # Filter data
+                continue
+            idx_since_100_count = np.where(
+                np.asarray(self.conf[icon].values >= int(n_outbreak))
+            )[0][0]
+            ax[0, 0].plot(
+                self.conf[icon].values[idx_since_100_count:],
+                label=icon,
+            )
+            ax[0, 1].plot(
+                self.dead[icon].values[idx_since_100_count:],
+                label=icon,
+            )
+            ax[0, 2].plot(
+                self.recov[icon].values[idx_since_100_count:],
+                label=icon,
+            )
+        for istate in self.conf_us.columns[1:]:
+            if self.conf_us[istate].values[-1] < int(nstate_filter):  # Filter
+                continue
+            idx_since_100_count = np.where(
+                np.asarray(self.conf_us[istate].values >= int(n_outbreak))
+            )[0][0]
+            ax[1, 0].plot(
+                self.conf_us[istate].values[idx_since_100_count:],
+                label=istate,
+            )
+            ax[1, 1].plot(
+                self.dead_us[istate].values[idx_since_100_count:],
+                label=istate,
+            )
+            ax[1, 2].plot(
+                self.recov_us[istate].values[idx_since_100_count:],
+                label=istate,
+            )
         return fig, ax
 
     @staticmethod
