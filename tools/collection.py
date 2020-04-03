@@ -305,10 +305,13 @@ class DataClass:
                 country_name = country_id[0]
                 country_iso = country_id[-1]
                 if idx == 0:
-                    rate = 0
+                    rate = 1
                 else:
-                    rate = self.conf.at[idx, country_name] \
-                           - self.conf.at[idx - 1, country_name]
+                    try:
+                        rate = self.conf.at[idx, country_name] \
+                               / self.conf.at[idx - 1, country_name]
+                    except ZeroDivisionError:
+                        rate = 1.0
                 self.df_global = pd.concat(
                     (
                         self.df_global,
@@ -317,7 +320,7 @@ class DataClass:
                                 dt,
                                 country_name,
                                 country_iso,
-                                int(rate),
+                                rate,
                                 int(self.conf.at[idx, country_name]),
                                 int(self.dead.at[idx, country_name]),
                                 int(self.recov.at[idx, country_name]),
