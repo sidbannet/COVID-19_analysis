@@ -308,8 +308,8 @@ class DataClass:
                     rate = 1
                 else:
                     try:
-                        rate = self.conf.at[idx, country_name] \
-                               / self.conf.at[idx - 1, country_name]
+                        rate = (self.conf.at[idx, country_name] + 0.01) \
+                               / (self.conf.at[idx - 1, country_name] + 0.01)
                     except ZeroDivisionError:
                         rate = 1.0
                 self.df_global = pd.concat(
