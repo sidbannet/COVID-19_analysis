@@ -21,6 +21,22 @@ class DataClass:
         df_template = pd.DataFrame(data=None)
         df_template['Date'] = []
         df_template_us = df_template.copy()
+        df_global = pd.DataFrame(data=None)
+        df_global['date'] = []
+        df_global['country'] = []
+        df_global['iso_alpha'] = []
+        df_global['rate'] = []
+        df_global['confirmed'] = []
+        df_global['death'] = []
+        df_global['recovered'] = []
+        df_us = pd.DataFrame(data=None)
+        df_us['date'] = []
+        df_us['state'] = []
+        df_us['iso_alpha'] = []
+        df_us['rate'] = []
+        df_us['confirmed'] = []
+        df_us['death'] = []
+        df_us['recovered'] = []
 
         region_index = {
             'Country': [
@@ -35,6 +51,7 @@ class DataClass:
                 ['Spain', 'ESP'],
                 ['Brazil', 'Brasil', 'BRA'],
                 ['Australia', 'AUS'],
+                ['Canada', 'CAN'],
                 ['Other', 'ROW'],
             ],
             'State': [
@@ -151,6 +168,12 @@ class DataClass:
         self.conf_us = df_template_us.copy()
         self.dead_us = df_template_us.copy()
         self.recov_us = df_template_us.copy()
+        self.df_global = df_global
+        self.df_us = df_us
+        self.__filter_nconf_con__ = int(10000)
+        self.__filter_nconf_state__ = int(5000)
+        self.__n_outbreak__ = int(1000)
+        self.__window__ = int(3)
 
         self._initialize_values_()
 
@@ -278,6 +301,32 @@ class DataClass:
                         self.recov_us.at[idx, state_name] = number_of_cases
                     except ValueError:
                         pass  # Do nothing
+            for inum, country_id in enumerate(self.__reg__['Country'][:-1]):
+                country_name = country_id[0]
+                country_iso = country_id[-1]
+                if idx == 0:
+                    rate = 0
+                else:
+                    rate = self.conf.at[idx, country_name] \
+                           - self.conf.at[idx - 1, country_name]
+                self.df_global = pd.concat(
+                    (
+                        self.df_global,
+                        pd.DataFrame(
+                            [[
+                                dt,
+                                country_name,
+                                country_iso,
+                                int(rate),
+                                int(self.conf.at[idx, country_name]),
+                                int(self.dead.at[idx, country_name]),
+                                int(self.recov.at[idx, country_name]),
+                            ]],
+                            columns=self.df_global.columns
+                        ),
+                    ),
+                    ignore_index=True,
+                )
 
     def plots(self) -> tuple:
         """Plot the COVID trends."""
@@ -296,7 +345,7 @@ class DataClass:
 
     def plots_timeseries(
         self,
-        n_outbreak: int = 100,
+        n_outbreak: int = 1000,
         n_filter_country: int = 10000,
         n_filter_state: int = 5000,
     ) -> tuple:
@@ -457,29 +506,7 @@ class DataClass:
                     label=istate,
                     linestyle='dashed', linewidth=1, color='k',
                 )
-
         return fig, ax
-
-    def process(self) -> pd.DataFrame:
-        """Aggregate and process data and get relevant dataframe."""
-
-        df = pd.DataFrame(data=None)
-        df['date'] = []
-        df['country'] = []
-        df['iso_alpha'] = []
-        df['rate'] = []
-        df['confirmed'] = []
-        df['death'] = []
-        df['recovered'] = []
-
-        data_confirmed = []
-
-        for idx, dt in enumerate(self.__dates__):
-            data_item = []
-            for inum, column in enumerate(self.conf.columns):
-                data_item.append(self.conf[idx, inum])
-            data_confirmed.append(data_item)
-
 
     @staticmethod
     def moving_average(
