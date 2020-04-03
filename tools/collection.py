@@ -116,7 +116,7 @@ class DataClass:
                         )
                     )
             for m in [4]:
-                for d in np.arange(start=1, stop=2, step=1):
+                for d in np.arange(start=1, stop=3, step=1):
                     dates.append(
                         datetime.datetime(
                             year=int(y), month= int(m), day=int(d),
