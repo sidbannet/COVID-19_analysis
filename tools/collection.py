@@ -24,16 +24,18 @@ class DataClass:
 
         region_index = {
             'Country': [
-                ['US', 'United States', 'United States of America'],
-                ['China', 'Mainland China', ],
-                ['India'],
-                ['Korea', 'South Korea'],
-                ['Singapore'],
-                ['Italy'],
-                ['UK', 'United Kingdom'],
-                ['Germany'],
-                ['Spain'],
-                ['Other'],
+                ['US', 'United States', 'United States of America', 'USA'],
+                ['China', 'Mainland China', 'CHN'],
+                ['India', 'IND'],
+                ['Korea', 'South Korea', 'KOR'],
+                ['Singapore', 'SGP'],
+                ['Italy', 'ITA'],
+                ['UK', 'United Kingdom', 'GBR'],
+                ['Germany', 'DEU'],
+                ['Spain', 'ESP'],
+                ['Brazil', 'Brasil', 'BRA'],
+                ['Australia', 'AUS'],
+                ['Other', 'ROW'],
             ],
             'State': [
                 ['Alabama', 'AL'],
@@ -457,6 +459,27 @@ class DataClass:
                 )
 
         return fig, ax
+
+    def process(self) -> pd.DataFrame:
+        """Aggregate and process data and get relevant dataframe."""
+
+        df = pd.DataFrame(data=None)
+        df['date'] = []
+        df['country'] = []
+        df['iso_alpha'] = []
+        df['rate'] = []
+        df['confirmed'] = []
+        df['death'] = []
+        df['recovered'] = []
+
+        data_confirmed = []
+
+        for idx, dt in enumerate(self.__dates__):
+            data_item = []
+            for inum, column in enumerate(self.conf.columns):
+                data_item.append(self.conf[idx, inum])
+            data_confirmed.append(data_item)
+
 
     @staticmethod
     def moving_average(
