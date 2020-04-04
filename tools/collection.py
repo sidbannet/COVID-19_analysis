@@ -21,19 +21,45 @@ class DataClass:
         df_template = pd.DataFrame(data=None)
         df_template['Date'] = []
         df_template_us = df_template.copy()
+        df_global = pd.DataFrame(data=None)
+        df_global['date'] = []
+        df_global['country'] = []
+        df_global['iso_alpha'] = []
+        df_global['rate'] = []
+        df_global['confirmed'] = []
+        df_global['death'] = []
+        df_global['recovered'] = []
+        df_us = pd.DataFrame(data=None)
+        df_us['date'] = []
+        df_us['state'] = []
+        df_us['iso_alpha'] = []
+        df_us['rate'] = []
+        df_us['confirmed'] = []
+        df_us['death'] = []
+        df_us['recovered'] = []
 
         region_index = {
             'Country': [
-                ['US', 'United States', 'United States of America'],
-                ['China', 'Mainland China', ],
-                ['India'],
-                ['Korea', 'South Korea'],
-                ['Singapore'],
-                ['Italy'],
-                ['UK', 'United Kingdom'],
-                ['Germany'],
-                ['Spain'],
-                ['Other'],
+                ['US', 'United States', 'United States of America', 'USA'],
+                ['China', 'Mainland China', 'CHN'],
+                ['India', 'IND'],
+                ['Japan', 'JPN'],
+                ['Korea', 'South Korea', 'KOR'],
+                ['Singapore', 'SGP'],
+                ['Italy', 'ITA'],
+                ['UK', 'United Kingdom', 'GBR'],
+                ['Germany', 'DEU'],
+                ['Spain', 'ESP'],
+                ['Brazil', 'Brasil', 'BRA'],
+                ['Australia', 'AUS'],
+                ['Canada', 'CAN'],
+                ['Argentina', 'ARG'],
+                ['South Africa', 'South africa', 'ZAF'],
+                ['Sweden', 'SWE'],
+                ['Algeria', 'DZA'],
+                ['Bangladesh', 'BGD'],
+                ['Pakistan', 'PAK'],
+                ['World', 'Other', 'ROW'],
             ],
             'State': [
                 ['Alabama', 'AL'],
@@ -149,6 +175,12 @@ class DataClass:
         self.conf_us = df_template_us.copy()
         self.dead_us = df_template_us.copy()
         self.recov_us = df_template_us.copy()
+        self.df_global = df_global
+        self.df_us = df_us
+        self.__filter_nconf_con__ = int(10000)
+        self.__filter_nconf_state__ = int(5000)
+        self.__n_outbreak__ = int(1000)
+        self.__window__ = int(3)
 
         self._initialize_values_()
 
@@ -201,7 +233,7 @@ class DataClass:
                     )
                 ]
                 if sum(con_buc) == 0:
-                    con_buc[-1] = True
+                    con_buc[-1] = True  # Catch all when not in the bucket
                 country_name = \
                     self.__reg__['Country'][
                         [i for i, val in enumerate(con_buc) if val][0]
@@ -224,6 +256,10 @@ class DataClass:
                     self.recov.at[idx, country_name] = number_of_cases
                 except ValueError:
                     pass  # Do nothing
+            # Aggregate the numbers on world-wide basis
+            self.conf.at[idx, 'World'] = sum(self.conf.values[idx, 1:])
+            self.dead.at[idx, 'World'] = sum(self.dead.values[idx, 1:])
+            self.recov.at[idx, 'World'] = sum(self.recov.values[idx, 1:])
             # Find out which US state it is
             for inum, icon in enumerate(df.Country_Region):
                 if icon not in self.__reg__['Country'][0]:
@@ -276,6 +312,37 @@ class DataClass:
                         self.recov_us.at[idx, state_name] = number_of_cases
                     except ValueError:
                         pass  # Do nothing
+            for inum, country_id in enumerate(self.__reg__['Country'][:-1]):
+                country_name = country_id[0]
+                country_iso = country_id[-1]
+                if idx < 3:
+                    rate = float(1.0)
+                else:
+                    try:
+                        rate = float(
+                            (self.conf.at[idx, country_name] + 0.01) \
+                            / (self.conf.at[idx - 3, country_name] + 0.01)
+                        )
+                    except ZeroDivisionError:
+                        rate = float(1.0)
+                self.df_global = pd.concat(
+                    (
+                        self.df_global,
+                        pd.DataFrame(
+                            [[
+                                dt,
+                                country_name,
+                                country_iso,
+                                float(max(rate, 1.0)),
+                                int(self.conf.at[idx, country_name]),
+                                int(self.dead.at[idx, country_name]),
+                                int(self.recov.at[idx, country_name]),
+                            ]],
+                            columns=self.df_global.columns
+                        ),
+                    ),
+                    ignore_index=True,
+                )
 
     def plots(self) -> tuple:
         """Plot the COVID trends."""
@@ -294,7 +361,7 @@ class DataClass:
 
     def plots_timeseries(
         self,
-        n_outbreak: int = 100,
+        n_outbreak: int = 1000,
         n_filter_country: int = 10000,
         n_filter_state: int = 5000,
     ) -> tuple:
@@ -378,7 +445,7 @@ class DataClass:
             idx_since_100_count = np.where(
                 np.asarray(self.conf[icon].values >= int(n_outbreak))
             )[0][0]
-            if icon is not 'Other':
+            if icon is not 'World':
                 ax[0, 0].plot(
                     self.conf[icon].values[idx_since_100_count:],
                     label=icon,
@@ -440,22 +507,24 @@ class DataClass:
                     linewidth=2,
                 )
             else:
+                idx_since_100_count = np.where(
+                    np.asarray(self.conf['US'].values >= int(n_outbreak))
+                )[0][0]
                 ax[1, 0].plot(
-                    self.conf_us[istate].values[idx_since_100_count:],
-                    label=istate,
+                    self.conf['US'].values[idx_since_100_count:],
+                    label='USA',
                     linestyle='dashed', linewidth=1, color='k',
                 )
                 ax[1, 1].plot(
-                    self.dead_us[istate].values[idx_since_100_count:],
-                    label=istate,
+                    self.dead['US'].values[idx_since_100_count:],
+                    label='USA',
                     linestyle='dashed', linewidth=1, color='k',
                 )
                 ax[1, 2].plot(
-                    self.recov_us[istate].values[idx_since_100_count:],
-                    label=istate,
+                    self.recov['US'].values[idx_since_100_count:],
+                    label='USA',
                     linestyle='dashed', linewidth=1, color='k',
                 )
-
         return fig, ax
 
     @staticmethod
