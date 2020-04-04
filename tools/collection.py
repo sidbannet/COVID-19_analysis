@@ -59,6 +59,22 @@ class DataClass:
                 ['Algeria', 'DZA'],
                 ['Bangladesh', 'BGD'],
                 ['Pakistan', 'PAK'],
+                ['France', 'FRA'],
+                ['Turkey', 'TUR'],
+                ['Switzerland', 'CHE'],
+                ['Belgium', 'BEL'],
+                ['Netherlands', 'Holland', 'NLD'],
+                ['Austria', 'AUT'],
+                ['Portugal', 'PRT'],
+                ['Norway', 'NOR'],
+                ['Peru', 'PER'],
+                ['Mexico', 'MEX'],
+                ['Indonesia', 'IDN'],
+                ['Israel', 'ISR'],
+                ['Russia', 'Russian Federation', 'USSR', 'RUS'],
+                ['Saudi Arabia', 'SAU'],
+                ['Chile', 'CHL'],
+                ['Malaysia', 'MYS'],
                 ['World', 'Other', 'ROW'],
             ],
             'State': [
@@ -142,7 +158,7 @@ class DataClass:
                         )
                     )
             for m in [4]:
-                for d in np.arange(start=1, stop=3, step=1):
+                for d in np.arange(start=1, stop=4, step=1):
                     dates.append(
                         datetime.datetime(
                             year=int(y), month= int(m), day=int(d),
