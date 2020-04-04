@@ -315,14 +315,16 @@ class DataClass:
             for inum, country_id in enumerate(self.__reg__['Country'][:-1]):
                 country_name = country_id[0]
                 country_iso = country_id[-1]
-                if idx == 0:
-                    rate = 1
+                if idx < 3:
+                    rate = float(1.0)
                 else:
                     try:
-                        rate = (self.conf.at[idx, country_name] + 0.01) \
-                               / (self.conf.at[idx - 1, country_name] + 0.01)
+                        rate = float(
+                            (self.conf.at[idx, country_name] + 0.01) \
+                            / (self.conf.at[idx - 3, country_name] + 0.01)
+                        )
                     except ZeroDivisionError:
-                        rate = 1.0
+                        rate = float(1.0)
                 self.df_global = pd.concat(
                     (
                         self.df_global,
@@ -331,7 +333,7 @@ class DataClass:
                                 dt,
                                 country_name,
                                 country_iso,
-                                rate,
+                                float(max(rate, 1.0)),
                                 int(self.conf.at[idx, country_name]),
                                 int(self.dead.at[idx, country_name]),
                                 int(self.recov.at[idx, country_name]),
