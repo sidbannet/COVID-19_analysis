@@ -10,6 +10,15 @@ This is the data repository for the 2019 Novel Coronavirus Visual Dashboard oper
 
 ![COVID-19 trends from this analysis](https://github.com/sidbannet/COVID-19_analysis/blob/master/COVID_trend.png)
 
+**Animation of COVID-19 spread across the world**
+Size of the bubble represents the number of cases per country and color of the bubble represents how fast the COVID-19 is spreading in the country.
+
+**_Confirmed cases_**
+![COVID-19 animation of confirmed cases](https://github.com/sidbannet/COVID-19_analysis/blob/master/confirmed_cases.gif)
+
+**_Deaths_**
+![COVID-19 animation of deaths](https://github.com/sidbannet/COVID-19_analysis/blob/master/deaths.gif)
+
 
 Visual Dashboard (desktop):
 https://www.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
