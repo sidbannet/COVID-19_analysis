@@ -59,7 +59,7 @@ class DataClass:
                 ['Algeria', 'DZA'],
                 ['Bangladesh', 'BGD'],
                 ['Pakistan', 'PAK'],
-                ['Other', 'ROW'],
+                ['World', 'Other', 'ROW'],
             ],
             'State': [
                 ['Alabama', 'AL'],
@@ -233,7 +233,7 @@ class DataClass:
                     )
                 ]
                 if sum(con_buc) == 0:
-                    con_buc[-1] = True
+                    con_buc[-1] = True  # Catch all when not in the bucket
                 country_name = \
                     self.__reg__['Country'][
                         [i for i, val in enumerate(con_buc) if val][0]
@@ -256,6 +256,10 @@ class DataClass:
                     self.recov.at[idx, country_name] = number_of_cases
                 except ValueError:
                     pass  # Do nothing
+            # Aggregate the numbers on world-wide basis
+            self.conf.at[idx, 'World'] = sum(self.conf.values[idx, 1:])
+            self.dead.at[idx, 'World'] = sum(self.dead.values[idx, 1:])
+            self.recov.at[idx, 'World'] = sum(self.recov.values[idx, 1:])
             # Find out which US state it is
             for inum, icon in enumerate(df.Country_Region):
                 if icon not in self.__reg__['Country'][0]:
@@ -439,7 +443,7 @@ class DataClass:
             idx_since_100_count = np.where(
                 np.asarray(self.conf[icon].values >= int(n_outbreak))
             )[0][0]
-            if icon is not 'Other':
+            if icon is not 'World':
                 ax[0, 0].plot(
                     self.conf[icon].values[idx_since_100_count:],
                     label=icon,
@@ -501,19 +505,22 @@ class DataClass:
                     linewidth=2,
                 )
             else:
+                idx_since_100_count = np.where(
+                    np.asarray(self.conf['US'].values >= int(n_outbreak))
+                )[0][0]
                 ax[1, 0].plot(
-                    self.conf_us[istate].values[idx_since_100_count:],
-                    label=istate,
+                    self.conf['US'].values[idx_since_100_count:],
+                    label='USA',
                     linestyle='dashed', linewidth=1, color='k',
                 )
                 ax[1, 1].plot(
-                    self.dead_us[istate].values[idx_since_100_count:],
-                    label=istate,
+                    self.dead['US'].values[idx_since_100_count:],
+                    label='USA',
                     linestyle='dashed', linewidth=1, color='k',
                 )
                 ax[1, 2].plot(
-                    self.recov_us[istate].values[idx_since_100_count:],
-                    label=istate,
+                    self.recov['US'].values[idx_since_100_count:],
+                    label='USA',
                     linestyle='dashed', linewidth=1, color='k',
                 )
         return fig, ax
