@@ -458,9 +458,11 @@ class DataClass:
         self.df_ndays = pd.DataFrame(data=None)
         self.df_ndays['Country'] = []
         self.df_ndays['Days'] = []
+        self.df_ndays['Mortality'] = []
         self.df_ndays_us = pd.DataFrame(data=None)
         self.df_ndays_us['State'] = []
         self.df_ndays_us['Days'] = []
+        self.df_ndays_us['Mortality'] = []
 
         for i, icon in enumerate(self.conf.columns[1:]):
             if self.conf[icon].values[-1] < int(ncon_filter):  # Filter data
@@ -491,6 +493,10 @@ class DataClass:
                     marker=mplttools.markers(i),
                     linewidth=3,
                 )
+                mortality = float(
+                    self.dead[icon].values[-1]
+                    / self.conf[icon].values[-1]
+                )
                 self.df_ndays = pd.concat(
                     (
                         self.df_ndays,
@@ -498,6 +504,7 @@ class DataClass:
                             [[
                                 str(icon),
                                 int(days_to_10k_count),
+                                float(mortality),
                             ]], columns=self.df_ndays.columns,
                         ),
                     ), ignore_index=True,
@@ -548,6 +555,10 @@ class DataClass:
                     marker=mplttools.markers(i),
                     linewidth=2,
                 )
+                mortality = float(
+                    self.dead_us[istate].values[-1]
+                    / self.conf_us[istate].values[-1]
+                )
                 self.df_ndays_us = pd.concat(
                     (
                         self.df_ndays_us,
@@ -555,6 +566,7 @@ class DataClass:
                             [[
                                 str(istate),
                                 int(days_to_10k_count),
+                                float(mortality),
                             ]], columns=self.df_ndays_us.columns,
                         ),
                     ), ignore_index=True,
