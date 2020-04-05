@@ -402,7 +402,6 @@ class DataClass:
         ax[0, 1].set_title('Deaths')
         ax[0, 2].set_title('Recovered')
         fig.suptitle('COVID-19 time series trend')
-
         return fig, ax
 
     def __plot__(
@@ -455,12 +454,24 @@ class DataClass:
             n_outbreak = self.__n_outbreak__
         except AttributeError:
             n_outbreak = 100
+        # Number of days to report large number of cases from initial outbreak
+        self.df_ndays = pd.DataFrame(data=None)
+        self.df_ndays['Country'] = []
+        self.df_ndays['Days'] = []
+        self.df_ndays_us = pd.DataFrame(data=None)
+        self.df_ndays_us['State'] = []
+        self.df_ndays_us['Days'] = []
+
         for i, icon in enumerate(self.conf.columns[1:]):
             if self.conf[icon].values[-1] < int(ncon_filter):  # Filter data
                 continue
             idx_since_100_count = np.where(
                 np.asarray(self.conf[icon].values >= int(n_outbreak))
             )[0][0]
+            days_to_10k_count = np.where(
+                np.asarray(self.conf[icon].values
+                           >= int(self.__filter_nconf_con__))
+            )[0][0] - idx_since_100_count
             if icon is not 'World':
                 ax[0, 0].plot(
                     self.conf[icon].values[idx_since_100_count:],
@@ -479,6 +490,17 @@ class DataClass:
                     label=icon,
                     marker=mplttools.markers(i),
                     linewidth=3,
+                )
+                self.df_ndays = pd.concat(
+                    (
+                        self.df_ndays,
+                        pd.DataFrame(
+                            [[
+                                str(icon),
+                                int(days_to_10k_count),
+                            ]], columns=self.df_ndays.columns,
+                        ),
+                    ), ignore_index=True,
                 )
             else:
                 ax[0, 0].plot(
@@ -503,6 +525,10 @@ class DataClass:
             idx_since_100_count = np.where(
                 np.asarray(self.conf_us[istate].values >= int(n_outbreak))
             )[0][0]
+            days_to_10k_count = np.where(
+                np.asarray(self.conf_us[istate].values
+                           >= int(self.__filter_nconf_state__))
+            )[0][0] - idx_since_100_count
             if istate is not 'ROW':
                 ax[1, 0].plot(
                     self.conf_us[istate].values[idx_since_100_count:],
@@ -521,6 +547,17 @@ class DataClass:
                     label=istate,
                     marker=mplttools.markers(i),
                     linewidth=2,
+                )
+                self.df_ndays_us = pd.concat(
+                    (
+                        self.df_ndays_us,
+                        pd.DataFrame(
+                            [[
+                                str(istate),
+                                int(days_to_10k_count),
+                            ]], columns=self.df_ndays_us.columns,
+                        ),
+                    ), ignore_index=True,
                 )
             else:
                 idx_since_100_count = np.where(
