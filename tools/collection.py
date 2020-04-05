@@ -498,7 +498,7 @@ class DataClass:
                             [[
                                 str(icon),
                                 int(days_to_10k_count),
-                            ]], columns=self.df_ndays,
+                            ]], columns=self.df_ndays.columns,
                         ),
                     ), ignore_index=True,
                 )
@@ -555,7 +555,7 @@ class DataClass:
                             [[
                                 str(istate),
                                 int(days_to_10k_count),
-                            ]], columns=self.df_ndays_us,
+                            ]], columns=self.df_ndays_us.columns,
                         ),
                     ), ignore_index=True,
                 )
