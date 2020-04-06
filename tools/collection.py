@@ -75,6 +75,7 @@ class DataClass:
                 ['Saudi Arabia', 'SAU'],
                 ['Chile', 'CHL'],
                 ['Malaysia', 'MYS'],
+                ['Iran', 'Islamic Republic of Iran', 'IRN'],
                 ['World', 'Other', 'ROW'],
             ],
             'State': [
