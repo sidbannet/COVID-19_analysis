@@ -8,7 +8,7 @@ This code repository uses the data repository published by JHU
  
 This is the data repository for the 2019 Novel Coronavirus Visual Dashboard operated by the Johns Hopkins University Center for Systems Science and Engineering (JHU CSSE). Also, Supported by ESRI Living Atlas Team and the Johns Hopkins University Applied Physics Lab (JHU APL).
 
-![COVID-19 trends from this analysis](https://github.com/sidbannet/COVID-19_analysis/blob/master/COVID_trend.png)
+![COVID-19 trends from this analysis](https://github.com/sidbannet/COVID-19_analysis/blob/master/COVID_trend_auto.png)
 
 **Animation of COVID-19 spread across the world**
 Size of the bubble represents the number of cases per country and color of the bubble represents how fast the COVID-19 is spreading in the country.
