@@ -154,6 +154,7 @@ class DataClass:
                             )[0], '%m-%d-%Y'
                         )
                     )
+        dates.sort()
         self.__dates__ = dates
 
         # Initialize the data frame
@@ -178,7 +179,7 @@ class DataClass:
         self.df_us = df_us
         self.__filter_nconf_con__ = int(10000)
         self.__filter_nconf_state__ = int(5000)
-        self.__n_outbreak__ = int(1000)
+        self.__n_outbreak__ = int(500)
         self.__window__ = int(3)
 
         self._initialize_values_()
