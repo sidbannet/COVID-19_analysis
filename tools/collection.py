@@ -134,45 +134,27 @@ class DataClass:
             ],
         }
 
-        dates = []
-
-        for y in [2020]:
-            for m in [1]:
-                for d in np.arange(start=22, stop=32, step=1):
-                    dates.append(
-                        datetime.datetime(
-                            year=int(y), month=int(m), day=int(d),
-                        )
-                    )
-            for m in [2]:
-                for d in np.arange(start=1, stop=30, step=1):
-                    dates.append(
-                        datetime.datetime(
-                            year=int(y), month=int(m), day=int(d),
-                        )
-                    )
-            for m in [3]:
-                for d in np.arange(start=1, stop=32, step=1):
-                    dates.append(
-                        datetime.datetime(
-                            year=int(y), month=int(m), day=int(d),
-                        )
-                    )
-            for m in [4]:
-                for d in np.arange(start=1, stop=6, step=1):
-                    dates.append(
-                        datetime.datetime(
-                            year=int(y), month=int(m), day=int(d),
-                        )
-                    )
-
         self.__reg__ = region_index
-        self.__dates__ = dates
-
         self.__jhudataloc__ = r'JHU_repo' \
                               + os.sep + 'csse_covid_19_data' \
                               + os.sep + 'csse_covid_19_daily_reports' \
                               + os.sep
+        dates = []
+        # r=root, d=directories, f = files
+        for r, d, f in os.walk(self.__jhudataloc__):
+            for file in f:
+                if '.csv' in file:
+                    dates.append(
+                        datetime.datetime.strptime(
+                            str.split(
+                                str.split(
+                                    os.path.join(r, file),
+                                    os.sep
+                                )[-1], '.csv'
+                            )[0], '%m-%d-%Y'
+                        )
+                    )
+        self.__dates__ = dates
 
         # Initialize the data frame
         for inum, icon in enumerate(region_index['Country']):
