@@ -361,7 +361,7 @@ class DataClass:
 
     def plots_timeseries(
         self,
-        n_outbreak: int = 1000,
+        n_outbreak: int = 500,
         n_filter_country: int = 10000,
         n_filter_state: int = 5000,
     ) -> tuple:
