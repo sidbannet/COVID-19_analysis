@@ -76,6 +76,7 @@ class DataClass:
                 ['Chile', 'CHL'],
                 ['Malaysia', 'MYS'],
                 ['Iran', 'Islamic Republic of Iran', 'IRN'],
+                ['New Zealand', 'NZL'],
                 ['World', 'Other', 'ROW'],
             ],
             'State': [
