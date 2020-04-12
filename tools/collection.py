@@ -442,8 +442,8 @@ class DataClass:
         rowdata_dead_us = {
             'UID': df_us_dead_UID,
             'Date': df_us_dead_Date,
-            'Population': df_us_dead_Population,
             'Death': df_us_dead_Death,
+            'Population': df_us_dead_Population,
         }
 
         self.df_geo_us = pd.merge(
