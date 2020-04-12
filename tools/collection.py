@@ -388,6 +388,7 @@ class DataClass:
         df_us_conf_Confirmed = []
         df_us_dead_UID = []
         df_us_dead_Date = []
+        df_us_dead_Population = []
         df_us_dead_Death = []
 
         date_col = int(11)
@@ -431,13 +432,17 @@ class DataClass:
                 df_us_dead_Date.append(
                     datetime.datetime.strptime(day, '%m/%d/%y')
                 )
+                df_us_dead_Population.append(
+                    int(df_dead_us.Population.loc[irow])
+                )
                 df_us_dead_Death.append(
-                    int(df_dead_us.loc[irow][iday + date_col])
+                    int(df_dead_us.loc[irow][iday + date_col +1])
                 )
                 iday += int(1)
         rowdata_dead_us = {
             'UID': df_us_dead_UID,
             'Date': df_us_dead_Date,
+            'Population': df_us_dead_Population,
             'Death': df_us_dead_Death,
         }
 
