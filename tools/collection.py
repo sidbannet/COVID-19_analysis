@@ -140,6 +140,10 @@ class DataClass:
                               + os.sep + 'csse_covid_19_data' \
                               + os.sep + 'csse_covid_19_daily_reports' \
                               + os.sep
+        self.__jhudatalocts__ = r'JHU_repo' \
+                                + os.sep + 'csse_covid_19_data' \
+                                + os.sep + 'csse_covid_19_time_series' \
+                                + os.sep
         dates = []
         # r=root, d=directories, f = files
         for r, d, f in os.walk(self.__jhudataloc__):
@@ -344,6 +348,104 @@ class DataClass:
                     ),
                     ignore_index=True,
                 )
+
+    def _parse_timeseries_(self) -> None:
+        """Parse and frame data from the time series data."""
+        filepath_conf_US = self.__jhudatalocts__ \
+                           + 'time_series_covid19_confirmed_US.csv'
+        filepath_conf_g = self.__jhudatalocts__ \
+                          + 'time_series_covid19_confirmed_global.csv'
+        filepath_dead_US = self.__jhudatalocts__ \
+                           + 'time_series_covid19_deaths_US.csv'
+        filepath_dead_g = self.__jhudatalocts__ \
+                          + 'time_series_covid19_deaths_global.csv'
+        filepath_recv_g = self.__jhudatalocts__ \
+                          + 'time_series_covid19_recovered_global.csv'
+        df_conf_us = pd.read_csv(
+            filepath_or_buffer=filepath_conf_US,
+        )
+        df_dead_us = pd.read_csv(
+            filepath_or_buffer=filepath_dead_US,
+            header=1,
+        )
+        df_conf_g = pd.read_csv(
+            filepath_or_buffer=filepath_conf_g,
+        )
+        df_dead_g = pd.read_csv(
+            filepath_or_buffer=filepath_dead_g,
+        )
+        df_recv_g = pd.read_csv(
+            filepath_or_buffer=filepath_recv_g,
+        )
+
+        df_us_conf_UID = []
+        df_us_conf_iso3 = []
+        df_us_conf_State = []
+        df_us_conf_Lat = []
+        df_us_conf_Long = []
+        df_us_conf_Key = []
+        df_us_conf_Date = []
+        df_us_conf_Confirmed = []
+        df_us_dead_UID = []
+        df_us_dead_Date = []
+        df_us_dead_Death = []
+
+        date_col = int(11)
+        daterange = df_conf_us.columns[date_col:]
+
+        for irow in range(df_conf_us.shape[0]):
+            if type(df_conf_us.UID.loc[irow]) is not np.int64:
+                continue
+            iday = int(0)
+            for day in daterange:
+                df_us_conf_UID.append(int(df_conf_us.UID.loc[irow]))
+                df_us_conf_iso3.append(df_conf_us.iso3.loc[irow])
+                df_us_conf_State.append(df_conf_us.Province_State.loc[irow])
+                df_us_conf_Lat.append(df_conf_us.Lat.loc[irow])
+                df_us_conf_Long.append(df_conf_us.Long_.loc[irow])
+                df_us_conf_Key.append(df_conf_us.Combined_Key.loc[irow])
+                df_us_conf_Date.append(
+                    datetime.datetime.strptime(day, '%m/%d/%y')
+                )
+                df_us_conf_Confirmed.append(
+                    int(df_conf_us.loc[irow][iday + date_col])
+                )
+                iday += int(1)
+        rowdata_conf_us = {
+            'UID': df_us_conf_UID,
+            'iso3': df_us_conf_iso3,
+            'State': df_us_conf_State,
+            'Lat': df_us_conf_Lat,
+            'Long': df_us_conf_Long,
+            'Key': df_us_conf_Key,
+            'Date': df_us_conf_Date,
+            'Confirmed': df_us_conf_Confirmed,
+        }
+
+        for irow in range(df_dead_us.shape[0]):
+            if type(df_dead_us.UID.loc[irow]) is not np.int64:
+                continue
+            iday = int(0)
+            for day in daterange:
+                df_us_dead_UID.append(int(df_dead_us.UID.loc[irow]))
+                df_us_dead_Date.append(
+                    datetime.datetime.strptime(day, '%m/%d/%y')
+                )
+                df_us_dead_Death.append(
+                    int(df_dead_us.loc[irow][iday + date_col])
+                )
+                iday += int(1)
+        rowdata_dead_us = {
+            'UID': df_us_dead_UID,
+            'Date': df_us_dead_Date,
+            'Death': df_us_dead_Death,
+        }
+
+        self.df_geo_us = pd.merge(
+            pd.DataFrame(rowdata_conf_us),
+            pd.DataFrame(rowdata_dead_us),
+            on=['UID', 'Date']
+        )
 
     def plots(self) -> tuple:
         """Plot the COVID trends."""
