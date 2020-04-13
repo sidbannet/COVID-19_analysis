@@ -11,7 +11,7 @@ from tools.collection import DataClass
 
 def update(
     dc: classmethod = DataClass,
-    num_days_to_plot: int = 40,
+    num_days_to_plot: int = 50,
 ) -> tuple:
     """Update the results."""
     assert(dc is DataClass), 'Incorrect class method'
