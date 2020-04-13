@@ -349,7 +349,7 @@ class DataClass:
                     ignore_index=True,
                 )
 
-    def parse_timeseries(self) -> None:
+    def _parse_timeseries_(self) -> None:
         """Parse and frame data from the time series data."""
         filepath_conf_US = self.__jhudatalocts__ \
                            + 'time_series_covid19_confirmed_US.csv'
@@ -386,6 +386,7 @@ class DataClass:
         df_us_conf_Key = []
         df_us_conf_Date = []
         df_us_conf_Confirmed = []
+        df_us_conf_Rate = []
         df_us_dead_UID = []
         df_us_dead_Date = []
         df_us_dead_Population = []
@@ -397,8 +398,7 @@ class DataClass:
         for irow in range(df_conf_us.shape[0]):
             if type(df_conf_us.UID.loc[irow]) is not np.int64:
                 continue
-            iday = int(0)
-            for day in daterange:
+            for iday, day in enumerate(daterange):
                 df_us_conf_UID.append(int(df_conf_us.UID.loc[irow]))
                 df_us_conf_iso3.append(df_conf_us.iso3.loc[irow])
                 df_us_conf_State.append(df_conf_us.Province_State.loc[irow])
@@ -411,7 +411,17 @@ class DataClass:
                 df_us_conf_Confirmed.append(
                     int(df_conf_us.loc[irow][iday + date_col])
                 )
-                iday += int(1)
+                if iday >= 2:
+                    rate_of_growth = float(
+                        df_conf_us.loc[irow][iday + date_col]
+                        / (0.01 + df_conf_us.loc[irow][iday + date_col - 2])
+                    )
+                else:
+                    rate_of_growth = float(
+                        df_conf_us.loc[irow][iday + date_col]
+                        / 0.01
+                    )
+                df_us_conf_Rate.append(rate_of_growth)
         rowdata_conf_us = {
             'UID': df_us_conf_UID,
             'iso3': df_us_conf_iso3,
@@ -421,13 +431,13 @@ class DataClass:
             'Key': df_us_conf_Key,
             'Date': df_us_conf_Date,
             'Confirmed': df_us_conf_Confirmed,
+            'Rate': df_us_conf_Rate,
         }
 
         for irow in range(df_dead_us.shape[0]):
             if type(df_dead_us.UID.loc[irow]) is not np.int64:
                 continue
-            iday = int(0)
-            for day in daterange:
+            for iday, day in enumerate(daterange):
                 df_us_dead_UID.append(int(df_dead_us.UID.loc[irow]))
                 df_us_dead_Date.append(
                     datetime.datetime.strptime(day, '%m/%d/%y')
@@ -438,7 +448,6 @@ class DataClass:
                 df_us_dead_Death.append(
                     int(df_dead_us.loc[irow][iday + date_col +1])
                 )
-                iday += int(1)
         rowdata_dead_us = {
             'UID': df_us_dead_UID,
             'Date': df_us_dead_Date,
@@ -451,6 +460,15 @@ class DataClass:
             pd.DataFrame(rowdata_dead_us),
             on=['UID', 'Date']
         ).sort_values(by='Date')
+        self.df_geo_us['Number_Cases_per_1mil'] = (
+            self.df_geo_us.Confirmed
+            / (self.Population + 0.0001)
+        ) * 1e6
+        self.df_geo_us['Mortality'] = 100 * (
+            self.df_geo_us.Death
+        ) / (
+            self.df_geo_us.Confirmed + 0.0001
+        )
 
     def plots(self) -> tuple:
         """Plot the COVID trends."""
@@ -588,7 +606,7 @@ class DataClass:
                 mortality = float(
                     self.dead[icon].values[-1]
                     / self.conf[icon].values[-1]
-                )
+                ) * 100
                 self.df_ndays = pd.concat(
                     (
                         self.df_ndays,
@@ -650,7 +668,7 @@ class DataClass:
                 mortality = float(
                     self.dead_us[istate].values[-1]
                     / self.conf_us[istate].values[-1]
-                )
+                ) * 100
                 self.df_ndays_us = pd.concat(
                     (
                         self.df_ndays_us,
