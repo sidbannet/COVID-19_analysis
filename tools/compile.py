@@ -44,7 +44,7 @@ def update(
         d.df_ndays_us.to_csv(compile_dir + 'days_to_10k_US.csv')
 
         d._parse_timeseries_()
-        d.to_csv(compile_dir + 'US_time_series_stat.csv')
+        d.df_geo_us.to_csv(compile_dir + 'US_time_series_stat.csv')
     except AttributeError as ae:
         raise Exception('Incorrect class method used')
     return fig, ax
