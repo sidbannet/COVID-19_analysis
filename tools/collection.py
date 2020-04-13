@@ -450,7 +450,7 @@ class DataClass:
             pd.DataFrame(rowdata_conf_us),
             pd.DataFrame(rowdata_dead_us),
             on=['UID', 'Date']
-        )
+        ).sort_values(by='Date')
 
     def plots(self) -> tuple:
         """Plot the COVID trends."""
