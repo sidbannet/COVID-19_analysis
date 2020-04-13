@@ -349,7 +349,7 @@ class DataClass:
                     ignore_index=True,
                 )
 
-    def _parse_timeseries_(self) -> None:
+    def parse_timeseries(self) -> None:
         """Parse and frame data from the time series data."""
         filepath_conf_US = self.__jhudatalocts__ \
                            + 'time_series_covid19_confirmed_US.csv'
