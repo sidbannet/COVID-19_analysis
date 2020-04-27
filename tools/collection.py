@@ -149,16 +149,28 @@ class DataClass:
         for r, d, f in os.walk(self.__jhudataloc__):
             for file in f:
                 if '.csv' in file:
-                    dates.append(
-                        datetime.datetime.strptime(
-                            str.split(
+                    try:
+                        dates.append(
+                            datetime.datetime.strptime(
                                 str.split(
-                                    os.path.join(r, file),
-                                    os.sep
-                                )[-1], '.csv'
-                            )[0], '%m-%d-%Y'
+                                    str.split(
+                                        os.path.join(r, file),
+                                        os.sep
+                                    )[-1], '.csv'
+                                )[0], '%m-%d-%Y'
+                            )
                         )
-                    )
+                    except ValueError:
+                        dates.append(
+                            datetime.datetime.strptime(
+                                str.split(
+                                    str.split(
+                                        os.path.join(r, file),
+                                        os.sep
+                                    )[-1], '.csv'
+                                )[0], '%m-%d-%y'
+                            )
+                        )
         dates.sort()
         self.__dates__ = dates
 
