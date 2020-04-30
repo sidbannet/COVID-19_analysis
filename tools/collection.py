@@ -407,10 +407,14 @@ class DataClass:
         daterange = df_conf_us.columns[date_col:]
 
         for irow in range(df_conf_us.shape[0]):
-            if type(df_conf_us.UID.loc[irow]) is not np.int64:
+            if type(df_conf_us.UID.loc[irow]) is not np.int64\
+                    and type(df_conf_us.UID.loc[irow]) is not np.float64:
                 continue
             for iday, day in enumerate(daterange):
-                df_us_conf_UID.append(int(df_conf_us.UID.loc[irow]))
+                try:
+                    df_us_conf_UID.append(int(df_conf_us.UID.loc[irow]))
+                except ValueError:
+                    df_us_conf_UID.append(int(0))
                 df_us_conf_iso3.append(df_conf_us.iso3.loc[irow])
                 df_us_conf_State.append(df_conf_us.Province_State.loc[irow])
                 df_us_conf_Lat.append(df_conf_us.Lat.loc[irow])
@@ -446,10 +450,14 @@ class DataClass:
         }
 
         for irow in range(df_dead_us.shape[0]):
-            if type(df_dead_us.UID.loc[irow]) is not np.int64:
+            if type(df_dead_us.UID.loc[irow]) is not np.int64\
+                    and type(df_dead_us.UID[irow]) is not np.float64:
                 continue
             for iday, day in enumerate(daterange):
-                df_us_dead_UID.append(int(df_dead_us.UID.loc[irow]))
+                try:
+                    df_us_dead_UID.append(int(df_dead_us.UID.loc[irow]))
+                except ValueError:
+                    df_us_dead_UID.append(int(0))
                 df_us_dead_Date.append(
                     datetime.datetime.strptime(day, '%m/%d/%y')
                 )
