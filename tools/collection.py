@@ -481,12 +481,12 @@ class DataClass:
         ).sort_values(by='Date')
         self.df_geo_us['Number_Cases_per_1mil'] = (
             self.df_geo_us.Confirmed
-            / (self.df_geo_us.Population + 0.0001)
+            / (self.df_geo_us.Population - 0.0001)
         ) * 1e6
         self.df_geo_us['Mortality'] = 100 * (
             self.df_geo_us.Death
         ) / (
-            self.df_geo_us.Confirmed + 0.0001
+            self.df_geo_us.Confirmed - 0.0001
         )
 
     def plots(self) -> tuple:
